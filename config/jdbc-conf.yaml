@@ -1,0 +1,10 @@
+# PostgreSQL
+pg:
+  url: jdbc:postgresql://postgres-db:5432/main_db
+  user: user
+  password: password
+
+# ClickHouse
+ch:
+  url: jdbc:clickhouse://clickhouse-server:8123/analytics
+  driver: ru.yandex.clickhouse.ClickHouseDriver

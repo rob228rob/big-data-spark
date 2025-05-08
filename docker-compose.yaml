@@ -1,0 +1,108 @@
+services:
+#  postgres-db:
+#    image: postgres:16.0
+#    container_name: postgres-bigdata-db
+#    environment:
+#      POSTGRES_USER: user
+#      POSTGRES_PASSWORD: password
+#      POSTGRES_DB: main_db
+#    ports:
+#      - '25432:5432'
+#    volumes:
+#      - postgres-data:/var/lib/postgresql/data
+#    networks:
+#      - shared
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3.6
+    container_name: clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    ports:
+      - '9000:9000'   # native protocol
+      - '8123:8123'   # HTTP
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./sql/clickhouse_ddl.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --query 'SELECT 1' --host localhost --port 9000"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - shared
+
+  spark-master:
+    build:
+      context: .
+      dockerfile: spark/Dockerfile
+    image: custom-spark:3.5
+    container_name: spark-master
+    command: ["/opt/bitnami/scripts/spark/run.sh"]
+    environment:
+      - HADOOP_USER_NAME=spark
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_WEBUI_HOST=0.0.0.0
+      - SPARK_JARS_IVY=/tmp/.ivy2   # директория Ivy
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+    volumes:
+      - ./:/app:ro
+      - ./jars:/opt/jars:ro
+      - spark-ivy:/tmp/.ivy2
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl -fs http://spark-master:8080 | grep -q 'Spark Master at' || exit 1"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 20s
+    networks:
+      - shared
+
+  spark-worker:
+    build:
+      context: .
+      dockerfile: spark/Dockerfile
+    container_name: spark-worker
+    command: ["/opt/bitnami/scripts/spark/run.sh"]
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_NO_DAEMONIZE=yes
+    depends_on:
+      - spark-master
+    volumes:
+      - ./ETL/spark_jobs:/opt/spark-apps
+      - ./jars:/opt/jars:ro
+    networks:
+      - shared
+
+  spark-job:
+    build:
+      context: spark/
+      dockerfile: Dockerfile
+    container_name: spark-job
+    volumes:
+      - ./:/app:ro
+      - ./jars:/opt/jars:ro
+    entrypoint: [ "spark-submit" ]
+    command: [
+      "--master", "spark://spark-master:7077",
+      "/app/etl/spark_jobs/build_reports.py"
+    ]
+    networks:
+      - shared
+
+volumes:
+  postgres-data:
+  clickhouse_data:
+  spark-ivy:
+
+networks:
+  shared:
+    driver: bridge

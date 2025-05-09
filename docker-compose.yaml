@@ -1,17 +1,17 @@
 services:
-#  postgres-db:
-#    image: postgres:16.0
-#    container_name: postgres-bigdata-db
-#    environment:
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#      POSTGRES_DB: main_db
-#    ports:
-#      - '25432:5432'
-#    volumes:
-#      - postgres-data:/var/lib/postgresql/data
-#    networks:
-#      - shared
+  postgres-db:
+    image: postgres:16.0
+    container_name: bigdata-db
+    environment:
+      POSTGRES_USER: bigdata
+      POSTGRES_PASSWORD: bigdata
+      POSTGRES_DB: main_db
+    ports:
+      - '25432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - shared
 
   clickhouse:
     image: clickhouse/clickhouse-server:24.3.6
@@ -84,8 +84,8 @@ services:
 
   spark-job:
     build:
-      context: spark/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: spark/job/Dockerfile
     container_name: spark-job
     volumes:
       - ./:/app:ro

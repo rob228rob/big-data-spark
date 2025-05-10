@@ -217,7 +217,6 @@ SELECT
     products.id,
     mock.product_quantity,
     d.id,
-    mock.sale_quantity,
     mock.sale_total_price,
     st.id,
     su.id

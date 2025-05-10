@@ -16,6 +16,36 @@ CREATE TABLE dim_dates
     date DATE
 );
 
+CREATE TABLE dim_product_categories
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(64)
+);
+
+CREATE TABLE dim_product_colors
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(64)
+);
+
+CREATE TABLE dim_product_sizes
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(64)
+);
+
+CREATE TABLE dim_product_brands
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(64)
+);
+
+CREATE TABLE dim_product_verbose
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(64)
+);
+
 CREATE TABLE dim_pet_types
 (
     id   BIGSERIAL PRIMARY KEY,
@@ -63,36 +93,6 @@ CREATE TABLE dim_sellers
     email       VARCHAR(64),
     country_id  BIGINT REFERENCES dim_countries (id),
     postal_code VARCHAR(64)
-);
-
-CREATE TABLE dim_product_categories
-(
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(64)
-);
-
-CREATE TABLE dim_product_colors
-(
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(64)
-);
-
-CREATE TABLE dim_product_sizes
-(
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(64)
-);
-
-CREATE TABLE dim_product_brands
-(
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(64)
-);
-
-CREATE TABLE dim_product_verbose
-(
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(64)
 );
 
 CREATE TABLE dim_products
@@ -145,7 +145,6 @@ CREATE TABLE facts_sales
     product_id       BIGINT REFERENCES dim_products (id),
     product_quantity BIGINT,
     date_id          BIGINT REFERENCES dim_dates (id),
-    quantity         BIGINT,
     total_price      DECIMAL(10, 2),
     store_id         BIGINT REFERENCES dim_stores (id),
     supplier_id      BIGINT REFERENCES dim_suppliers (id)

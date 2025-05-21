@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS analytics;
 
--- Витрина 1: продажи по продуктам
+--  продажи по продуктам
 CREATE TABLE IF NOT EXISTS analytics.sales_by_product (
     product_id UInt64,
     product_name String,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS analytics.sales_by_product (
 ) ENGINE = MergeTree()
 ORDER BY (category, product_id);
 
--- Витрина 2: продажи по клиентам
+--  продажи по клиентам
 CREATE TABLE IF NOT EXISTS analytics.sales_by_customer (
     customer_id UInt64,
     customer_name String,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS analytics.sales_by_customer (
 ) ENGINE = MergeTree()
 ORDER BY (country, customer_id);
 
--- Витрина 3: продажи по времени
+--  продажи по времени
 CREATE TABLE IF NOT EXISTS analytics.sales_by_time (
     month UInt8,
     year UInt16,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS analytics.sales_by_time (
 ) ENGINE = MergeTree()
 ORDER BY (year, month);
 
--- Витрина 4: продажи по магазинам
+--  продажи по магазинам
 CREATE TABLE IF NOT EXISTS analytics.sales_by_store (
     store_id UInt64,
     store_name String,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS analytics.sales_by_store (
 ) ENGINE = MergeTree()
 ORDER BY (country, city, store_id);
 
--- Витрина 5: продажи по поставщикам
+--  продажи по поставщикам
 CREATE TABLE IF NOT EXISTS analytics.sales_by_supplier (
     supplier_id UInt64,
     supplier_name String,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS analytics.sales_by_supplier (
 ) ENGINE = MergeTree()
 ORDER BY (country, supplier_id);
 
--- Витрина 6: качество продукции
+--  качество продукции
 CREATE TABLE IF NOT EXISTS analytics.product_quality (
     product_id UInt64,
     product_name String,

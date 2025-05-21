@@ -82,11 +82,36 @@ services:
     networks:
       - shared
 
-  spark-job:
+  spark-job-click:
     build:
       context: .
-      dockerfile: spark/job/Dockerfile
-    container_name: spark-job
+      dockerfile: spark/job/spark-click/Dockerfile
+    container_name: spark-job-click
+    volumes:
+      - ./:/app:ro
+      - ./jars:/opt/jars:ro
+    environment:
+      # PSQL
+      PG_DATABASE: main_db
+      PG_HOST: bigdata-db
+      PG_PORT: 5432
+      PG_USER: ${PG_USER:-bigdata}
+      PG_PASSWORD: ${PG_PASSWORD:-bigdata}
+      # CH
+      CH_HOST: clickhouse-server
+      CH_PORT: 8123
+      CH_DATABASE: analytics
+      CH_DRIVER: com.clickhouse.jdbc.ClickHouseDriver
+      # Дополнительные JARs драйверы для Spark
+      SPARK_JARS: /opt/bitnami/spark/jars/clickhouse-jdbc-0.8.3-all.jar,/opt/bitnami/spark/jars/postgresql-42.7.3.jar
+    networks:
+      - shared
+
+  spark-job-postgres:
+    build:
+      context: .
+      dockerfile: spark/job/spark-postgresql/Dockerfile
+    container_name: spark-job-postgres
     volumes:
       - ./:/app:ro
       - ./jars:/opt/jars:ro
